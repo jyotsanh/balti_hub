@@ -1,0 +1,34 @@
+services:
+  # ==============================
+  # Redis Cache / Queue Service
+  # ==============================
+  redis:
+    image: redis:7-alpine
+    container_name: balti-redis-service
+    ports:
+      - "6370:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+
+
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  # ==============================
+  # FastAPI Application Service
+  # ==============================
+  balti_hub:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: baltiHub-service
+    ports:
+      - "8050:8015"
+    env_file:
+      - .env.prod
+    depends_on:
+      - redis
+  
