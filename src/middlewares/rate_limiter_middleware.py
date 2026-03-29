@@ -1,4 +1,3 @@
-import time
 from typing import override, Callable
 
 from fastapi import Request, status, FastAPI
@@ -6,7 +5,7 @@ from fastapi.responses import JSONResponse  # Import this
 from starlette.middleware.base import BaseHTTPMiddleware
 from loguru import logger
 
-from src.service.redis_service.redis_service import AsyncRedisClient
+from src.service import AsyncRedisClient
 
 
 class RateLimiterMiddleware(BaseHTTPMiddleware):
@@ -31,12 +30,12 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
     @override
     async def dispatch(self, request: Request, call_next: Callable):
         # Lazily resolve the redis client that lifespan stored on app.state.
-        r_client: AsyncRedisClient | None = getattr(
-            request.app.state, "r_client", None
+        redis_client: AsyncRedisClient | None = getattr(
+            request.app.state, "redis_client", None
         )
 
         # If Redis is unavailable, fail open (let the request through).
-        if r_client is None:
+        if redis_client is None:
             logger.warning("redis connection fails, no rate limit")
             return await call_next(request)
 
@@ -45,10 +44,10 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
         key = f"rate_limit:{client_ip}"
 
         try:
-            count = await r_client.incr(key)
+            count = await redis_client.incr(key)
             if count == 1:
                 # First request in this window — arm the expiry.
-                await r_client.expire(key, self.window)
+                await redis_client.expire(key, self.window)
 
             if count > self.limit:
                 return JSONResponse(

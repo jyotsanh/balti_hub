@@ -49,4 +49,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 8015
 
 # Start the server directly using Python, completely bypassing uv
-CMD ["python", "src/__init__.py", "--env", "prod"]
+CMD ["server"]

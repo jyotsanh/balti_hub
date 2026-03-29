@@ -2,6 +2,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 
 # application
 from src.config import settings
@@ -10,10 +11,40 @@ from src.middlewares import (
     SecurityHeadersMiddleware, 
     ProcessTimeMiddleware
 )
+from src.service import AsyncRedisClient
+from src.routes import api_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    try:
+        
+        rclient = AsyncRedisClient(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+        )
+        if not await rclient.ping(): # check redis connection
+            logger.error(
+                "failed connecting redis:"
+                f"host:{settings.REDIS_HOST}"
+                f"port:{settings.REDIS_PORT}"
+            )
+            raise RuntimeError("failed redis ping")
+        else:
+            logger.info("redis connection successfull.")
+            app.state.redis_client = rclient  # AsyncRedisClient instance
+    
+    except ConnectionError as r_error:
+        logger.error(f"redis connection error: {r_error}")
+        logger.error(
+                "failed connecting redis -> "
+                f"host:{settings.REDIS_HOST} "
+                f"port:{settings.REDIS_PORT}"
+            )
+        raise RuntimeError("redis connection error")
+   
     yield
+
+    await app.state.redis_client.close()  
 
 
 app = FastAPI(
@@ -26,9 +57,10 @@ app = FastAPI(
 ## Layer 1: cors middleware
 app.add_middleware(
     CORSMiddleware,
-    # TODO, implement BACKEND_CORS_ORIGINS list based on server start mode.
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
-    # TODO: important implement 'True' for cors origins.
+    allow_origins=[
+        str(origin).rstrip("/")
+        for origin in settings.BACKEND_CORS_ORIGINS
+    ],
     allow_credentials=settings.ALLOW_CREDENTIALS,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,4 +80,4 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(ProcessTimeMiddleware)
 
 
-# app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix=settings.API_V1_STR)

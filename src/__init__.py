@@ -13,8 +13,8 @@ def dev():
     logger.info("running server in **development** mode")
     uvicorn.run(
         "src.server:app",
-        host=settings.D_HOST,
-        port=settings.D_PORT,
+        host=settings.DEV_HOST,
+        port=settings.DEV_PORT,
         reload=True
     )
 
@@ -26,8 +26,8 @@ def server():
     logger.info("running server in **production** mode")
     uvicorn.run(
         "src.server:app",
-        host=settings.P_HOST,
-        port=settings.P_PORT
+        host=settings.PROD_HOST,
+        port=settings.PROD_PORT
     )
 
 if __name__ == "__main__":
