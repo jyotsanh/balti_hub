@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, UploadFile, Response
 
 from src.schemas import BlobUploadResponse, BlobMetadata
 from src.service import BlobStorageService
-from .deps import get_blob_service
+from .deps import get_blob_service, validate_blob_id
 
 
 blob_router = APIRouter()
@@ -17,6 +17,9 @@ async def upload_blob(
     file: UploadFile,
     service: BlobStorageService = Depends(get_blob_service),
 ) -> BlobUploadResponse:
+    """
+    
+    """
     result = await service.save(file)
     return BlobUploadResponse(
         blob_id=result["blob_id"],
@@ -32,8 +35,16 @@ async def upload_blob(
 @blob_router.get(
     path="/{blob_id}"
 )
-async def get_blob(service: BlobStorageService = Depends(get_blob_service)): ...
-
+async def get_blob(
+    blob_id: str = Depends(validate_blob_id),
+    service: BlobStorageService = Depends(get_blob_service)
+):
+    result = await service.get(blob_id)
+    return Response(
+        content=result["content"],
+        media_type="application/octet-stream",
+        headers={"X-Blob-Size": str(result["file_size"])},
+    )
 
 @blob_router.delete(
     path="/{blob_id}"

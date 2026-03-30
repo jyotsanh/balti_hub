@@ -1,11 +1,13 @@
 from pathlib import Path
-from uuid import uuid4
 
+from uuid6 import uuid7
+import aiofiles
 from fastapi import UploadFile
 
 from src.service.blob_storage_service.exception import (
     BlobServiceException,
     BlobTooLargeError,
+    BlobNotFoundError,
     UnsupportedContentTypeError,
 )
 
@@ -21,6 +23,9 @@ class BlobStorageService:
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
     async def save(self, file: UploadFile) -> dict:
+        """
+        
+        """
         if file.content_type not in ALLOWED_TYPES:
             raise UnsupportedContentTypeError(
                 message=f"Content type '{file.content_type}' is not allowed.",
@@ -43,10 +48,11 @@ class BlobStorageService:
                 },
             )
 
-        blob_id = str(uuid4())
+        blob_id = str(uuid7())
 
         try:
-            (self.storage_path / blob_id).write_bytes(content)
+            async with aiofiles.open(self.storage_path / blob_id, "wb") as f:
+                await f.write(content)
         except OSError as e:
             raise BlobServiceException(
                 message="Failed to save blob to storage.",
@@ -61,7 +67,33 @@ class BlobStorageService:
             "file_type": file.content_type,
         }
 
-    async def get(self): ...
+    async def get(self, blob_id: str) -> dict:
+        """
+        
+        """
+        blob_path = self.storage_path / blob_id
+
+        try:
+            async with aiofiles.open(blob_path, "rb") as f:
+                content = await f.read()
+        except FileNotFoundError:
+            raise BlobNotFoundError(
+                message=f"Blob '{blob_id}' not found.",
+                status_code=404,
+                details={"blob_id": blob_id},
+            )
+        except OSError as e:
+            raise BlobServiceException(
+                message="Failed to read blob from storage.",
+                status_code=500,
+                details={"reason": str(e)},
+            )
+    
+        return {
+            "blob_id": blob_id,
+            "content": content,
+            "file_size": len(content),
+        }
 
     async def delete(self): ...
 

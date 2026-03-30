@@ -85,7 +85,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 ## Layer 4: middleware for tracking response time.
 app.add_middleware(ProcessTimeMiddleware)
 
-
+## Exception handlers
 app.add_exception_handler(AppBaseException, api_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
