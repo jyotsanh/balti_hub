@@ -210,3 +210,4 @@ __marimo__/
 # project
 .env.dev
 .env.prod
+temp_storage

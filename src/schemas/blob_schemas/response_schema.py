@@ -1,8 +1,15 @@
 from pydantic import BaseModel
 
 
-class BlobUploadResponse(BaseModel): ...
+class BlobMetadata(BaseModel):
+    file_name: str
+    file_size: int  # bytes
+    file_type: str
 
-class BlobMetadata(BaseModel): ...
+
+class BlobUploadResponse(BaseModel):
+    blob_id: str
+    file_metadata: BlobMetadata
+
 
 class BlobListResponse(BaseModel): ...

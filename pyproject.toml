@@ -9,6 +9,7 @@ dependencies = [
     "httpx>=0.28.1",
     "loguru>=0.7.3",
     "pydantic-settings>=2.13.1",
+    "python-multipart>=0.0.22",
     "redis>=7.4.0",
     "uvicorn>=0.42.0",
 ]
