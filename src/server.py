@@ -2,6 +2,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
 from loguru import logger
 
 # application
@@ -13,6 +14,11 @@ from src.middlewares import (
 )
 from src.service import AsyncRedisClient
 from src.routes import api_router
+from src.exception_handlers import (
+    api_exception_handler, 
+    validation_exception_handler
+)
+from src.exception import AppBaseException
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -79,5 +85,8 @@ app.add_middleware(SecurityHeadersMiddleware)
 ## Layer 4: middleware for tracking response time.
 app.add_middleware(ProcessTimeMiddleware)
 
+
+app.add_exception_handler(AppBaseException, api_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
