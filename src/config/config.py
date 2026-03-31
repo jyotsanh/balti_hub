@@ -1,4 +1,4 @@
-from pydantic import AnyHttpUrl
+from pydantic import AnyHttpUrl, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,6 +20,17 @@ class Settings(BaseSettings):
     ALLOW_CREDENTIALS:bool = False
     API_LIMIT:int = 20
     API_WINDOW:int = 60
+    FIRST_SUPERUSER: EmailStr
+    FIRST_SUPERUSER_PASSWORD: str
+    # 60 minutes * 24 hours * 8 days = 8 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    SECRET_KEY:str = "baltiiiii"
+    # Database
+    MONGO_HOST:str = "localhost"
+    MONGO_PORT:int = 27017
+    MONGO_DB:str = "balti-hub"
+    # Set default to None to easily detect if it's missing in .env
+    MONGO_URI: str | None = None
 
     # Production HOST & PORT
     PROD_HOST:str = "0.0.0.0"
