@@ -28,7 +28,7 @@ from src.exception_handlers import (
 from src.exception import AppBaseException
 from src.auth import get_hashed_password
 # models
-from src.models import UserDocument
+from src.models import UserDocument, BlobDocument
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -92,7 +92,7 @@ async def lifespan(app: FastAPI):
     # beanie initialization
     await init_beanie(
         database=app.state.mongo_client[settings.MONGO_DB], 
-        document_models=[UserDocument]
+        document_models=[UserDocument, BlobDocument]
     )
     user = await UserDocument.find_one({"email": settings.FIRST_SUPERUSER})
     if not user:

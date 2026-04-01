@@ -36,6 +36,8 @@ class BlobStorageService:
                 },
             )
 
+        # TODO (jyotsanh): Fix the memory vulnerability
+        # Stream the upload using chunked reads with a running byte counter
         content = await file.read()
 
         if len(content) > MAX_SIZE:

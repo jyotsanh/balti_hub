@@ -49,8 +49,10 @@ services:
     env_file:
       - .env.prod
     depends_on:
-      - redis
-      - mongodb
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
 
 volumes:
     mongodb_data:

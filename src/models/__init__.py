@@ -1,3 +1,4 @@
 from .users import UserDocument
+from .blobs import BlobDocument
 
-__all__ = ["UserDocument"]
+__all__ = ["UserDocument", "BlobDocument"]

@@ -12,20 +12,16 @@ from beanie import (
     Insert,
     before_event,
 )
-from pydantic import EmailStr, Field
+from pydantic import  Field
 
+class BlobDocument(Document):
+    blob_id: Annotated[UUID, Field(default_factory=uuid7), Indexed(unique=True)]
+    owner_uuid1:Annotated[UUID, Indexed(unique=True)]
+    file_name:str
+    file_size:int
+    content_type:str
+    created_at:str
 
-class UserDocument(Document):
-    uuid: Annotated[UUID, Field(default_factory=uuid7), Indexed(unique=True)]
-    email: Annotated[EmailStr, Indexed(unique=True)]
-    first_name: str | None = None
-    last_name: str | None = None
-    hashed_password: str | None = None
-    provider: str | None = None
-    picture: str | None = None
-    is_active: bool = True
-    is_superuser: bool = False
-    
     # timestamps
     created_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

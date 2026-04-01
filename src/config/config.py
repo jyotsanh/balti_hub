@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     # project-setting
     PROJECT_NAME:str="BaltiHub Service"
     API_V1_STR:str = "/api/v1"
+    
     # cors
     BACKEND_CORS_ORIGINS:list[AnyHttpUrl] = [
         "http://localhost:8015",
@@ -25,6 +26,10 @@ class Settings(BaseSettings):
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     SECRET_KEY:str = "baltiiiii"
+    
+    # blob
+    BLOB_STORAGE_PATH:str = "temp_storage"
+    
     # Database
     MONGO_HOST:str = "localhost"
     MONGO_PORT:int = 27017
