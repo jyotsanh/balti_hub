@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, Response
 
 from src.schemas import BlobUploadResponse, BlobMetadata
-from src.models import User
+from src.models import UserDocument
 from src.service import BlobStorageService
 from src.auth import get_current_active_user
 from .deps import get_blob_service, validate_blob_id
@@ -18,7 +18,7 @@ blob_router = APIRouter()
 async def upload_blob(
     file: UploadFile,
     service: BlobStorageService = Depends(get_blob_service),
-    current_user: User = Depends(get_current_active_user)
+    current_user: UserDocument = Depends(get_current_active_user)
 ) -> BlobUploadResponse:
     """
     
@@ -41,7 +41,7 @@ async def upload_blob(
 async def get_blob(
     blob_id: str = Depends(validate_blob_id),
     service: BlobStorageService = Depends(get_blob_service),
-    current_user: User = Depends(get_current_active_user)
+    current_user: UserDocument = Depends(get_current_active_user)
 ):
     result = await service.get(blob_id)
     return Response(
@@ -55,7 +55,7 @@ async def get_blob(
 )
 async def delete_blob(
     service: BlobStorageService = Depends(get_blob_service),
-    current_user: User = Depends(get_current_active_user)
+    current_user: UserDocument = Depends(get_current_active_user)
 ): ...
 
 
@@ -64,5 +64,5 @@ async def delete_blob(
 )
 async def list_blobs(
     service: BlobStorageService = Depends(get_blob_service),
-    current_user: User = Depends(get_current_active_user)
+    current_user: UserDocument = Depends(get_current_active_user)
 ): ...

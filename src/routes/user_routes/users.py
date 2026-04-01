@@ -11,7 +11,7 @@ from src.auth import (
     get_current_active_user,
     get_hashed_password,
 )
-from src.models import User
+from src.models import UserDocument
 
 router = APIRouter()
 
@@ -27,7 +27,7 @@ async def register_user(
     Register a new user.
     """
     hashed_password = get_hashed_password(password)
-    user = User(
+    user = UserDocument(
         email=email,
         hashed_password=hashed_password,
         first_name=first_name,
@@ -44,7 +44,7 @@ async def register_user(
 
 @router.get("/me", response_model=User)
 async def get_profile(
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserDocument = Depends(get_current_active_user),
 ) -> Any:
     """
     Get current user.
@@ -55,7 +55,7 @@ async def get_profile(
 @router.patch("/me", response_model=User)
 async def update_profile(
     update: UserUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserDocument = Depends(get_current_active_user),
 ) -> Any:
     """
     Update current user.
@@ -80,7 +80,7 @@ async def update_profile(
 
 
 @router.delete("/me", response_model=User)
-async def delete_me(user: User = Depends(get_current_active_user)):
+async def delete_me(user: UserDocument = Depends(get_current_active_user)):
     await user.delete()
     return user
 

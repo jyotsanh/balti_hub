@@ -18,6 +18,25 @@ services:
       retries: 5
   
   # ==============================
+  # MongoDB Database Service
+  # ==============================
+  mongodb:
+    image: mongo:7
+    container_name: baltihub-mongodb-service
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==============================
   # FastAPI Application Service
   # ==============================
   balti_hub:
@@ -31,4 +50,7 @@ services:
       - .env.prod
     depends_on:
       - redis
-  
+      - mongodb
+
+volumes:
+    mongodb_data:

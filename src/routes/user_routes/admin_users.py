@@ -11,7 +11,7 @@ from src.auth import (
     get_current_active_superuser,
     get_hashed_password,
 )
-from src.models import User
+from src.models import UserDocument
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ async def get_users(
     offset: int | None = 0,
     admin_user: User = Depends(get_current_active_superuser),
 ):
-    users = await User.find_all().skip(offset).limit(limit).to_list()
+    users = await UserDocument.find_all().skip(offset).limit(limit).to_list()
     return users
 
 
@@ -49,7 +49,7 @@ async def update_user(
     current_user : User, optional
         the current superuser, by default Depends(get_current_active_superuser)
     """
-    user = await User.find_one({"uuid": userid})
+    user = await UserDocument.find_one({"uuid": userid})
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     update_data = update.model_dump(exclude_unset=True)
@@ -88,7 +88,7 @@ async def get_user(
     User
         User info
     """
-    user = await User.find_one({"uuid": userid})
+    user = await UserDocument.find_one({"uuid": userid})
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -98,7 +98,7 @@ async def get_user(
 async def delete_user(
     userid: UUID, admin_user: User = Depends(get_current_active_superuser)
 ):
-    user = await User.find_one({"uuid": userid})
+    user = await UserDocument.find_one({"uuid": userid})
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     await user.delete()

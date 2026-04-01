@@ -6,7 +6,7 @@ from beanie import Document, Indexed
 from pydantic import EmailStr, Field
 
 
-class User(Document):
+class UserDocument(Document):
     uuid: Annotated[UUID, Field(default_factory=uuid6), Indexed(unique=True)]
     email: Annotated[EmailStr, Indexed(unique=True)]
     first_name: str | None = None

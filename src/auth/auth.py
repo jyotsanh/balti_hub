@@ -2,30 +2,29 @@ from typing import Any
 from datetime import timedelta, timezone, datetime
 from jose import jwt, JWTError
 
+import bcrypt
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException , status
-from passlib.context import CryptContext
 from uuid import UUID
 
-from src.models import User
+from src.models import UserDocument
 from src.schemas import TokenPayload
 from src.config import settings
 
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login/access-token")
-password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_hashed_password(password: str) -> str:
-    return password_context.hash(password)
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def verify_password(password: str, hashed_pass: str) -> bool:
-    return password_context.verify(password, hashed_pass)
+    return bcrypt.checkpw(password.encode(), hashed_pass.encode())
 
 
-async def authenticate_user(email: str, password: str) -> User | None:
-    user = await User.find_one({"email": email})
+async def authenticate_user(email: str, password: str) -> UserDocument | None:
+    user = await UserDocument.find_one({"email": email})
     if not user:
         return None
     if user.hashed_password is None or not verify_password(
@@ -57,7 +56,7 @@ async def _get_current_user(token):
         token_data = TokenPayload(uuid=userid)
     except JWTError:
         raise credentials_exception
-    user = await User.find_one({"uuid": token_data.uuid})
+    user = await UserDocument.find_one({"uuid": token_data.uuid})
     if user is None:
         raise credentials_exception
     return user
@@ -67,15 +66,15 @@ async def get_current_user(token:str = Depends(oauth2_scheme)):
 
 
 def get_current_active_user(
-    current_user: User = Depends(get_current_user),
-) -> User:
+    current_user: UserDocument = Depends(get_current_user),
+) -> UserDocument:
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 def get_current_active_superuser(
-    current_user: User = Depends(get_current_user),
-) -> User:
+    current_user: UserDocument = Depends(get_current_user),
+) -> UserDocument:
     if not current_user.is_superuser:
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
