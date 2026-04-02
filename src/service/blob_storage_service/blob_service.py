@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from uuid6 import uuid7
 import aiofiles
+from uuid import UUID
+from uuid6 import uuid7
 from fastapi import UploadFile
 
 from src.service.blob_storage_service.exception import (
@@ -22,7 +23,7 @@ class BlobStorageService:
         self.storage_path = storage_path
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
-    async def save(self, file: UploadFile, user_uuid:str) -> dict:
+    async def save(self, file: UploadFile, user_uuid:UUID) -> dict:
         """
         
         """
@@ -39,7 +40,7 @@ class BlobStorageService:
         # TODO (jyotsanh): Fix the memory vulnerability
         # requires a more invasive architectural change (chunked streaming from request.stream()
         
-        if file.size > MAX_SIZE:
+        if file.size is None and file.size > MAX_SIZE:
             raise BlobTooLargeError(
                 message="File exceeds the 3 MB size limit.",
                 status_code=413,
@@ -72,11 +73,11 @@ class BlobStorageService:
             "file_type": file.content_type,
         }
 
-    async def get(self, blob_id: str) -> dict:
+    async def get(self, blob_id: str, user_uuid:UUID) -> dict:
         """
         
         """
-        blob_path = self.storage_path / blob_id
+        blob_path = self.storage_path / str(user_uuid) / blob_id
 
         try:
             async with aiofiles.open(blob_path, "rb") as f:
@@ -100,6 +101,32 @@ class BlobStorageService:
             "file_size": len(content),
         }
 
-    async def delete(self): ...
+    async def delete(self, blob_id:str, user_uuid:UUID) -> None:
+        
+        user_dir = self.storage_path / str(user_uuid) / blob_id
+        try:
+            user_dir.unlink()
+            return
+        except FileNotFoundError:
+            raise BlobNotFoundError(
+                message=f"Blob '{blob_id}' not found.",
+                status_code=404,
+                details={"blob_id": blob_id},
+            )
+        except OSError as e:
+            raise BlobServiceException(
+                message="Failed to delete blob from storage.",
+                status_code=500,
+                details={"reason": str(e)},
+            )
+        
 
-    async def list(self): ...
+
+    async def list_blob(self, user_uuid:UUID) -> list[str]:
+        
+        user_dir = self.storage_path / str(user_uuid)
+        if not user_dir.exists():
+            return []
+        
+        return [entry.name for entry in user_dir.iterdir() if entry.is_file()]
+        

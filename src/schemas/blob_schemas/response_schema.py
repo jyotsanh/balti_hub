@@ -13,4 +13,6 @@ class BlobUploadResponse(BaseModel):
     file_metadata: BlobMetadata
 
 
-class BlobListResponse(BaseModel): ...
+class BlobListResponse(BaseModel):
+    blobs: list[str]
+    total: int

@@ -23,6 +23,7 @@ class UserDocument(Document):
     hashed_password: str | None = None
     provider: str | None = None
     picture: str | None = None
+    blob_count:int = 0
     is_active: bool = True
     is_superuser: bool = False
     
