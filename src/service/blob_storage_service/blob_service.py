@@ -22,7 +22,7 @@ class BlobStorageService:
         self.storage_path = storage_path
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
-    async def save(self, file: UploadFile) -> dict:
+    async def save(self, file: UploadFile, user_uuid:str) -> dict:
         """
         
         """
@@ -37,23 +37,26 @@ class BlobStorageService:
             )
 
         # TODO (jyotsanh): Fix the memory vulnerability
-        # Stream the upload using chunked reads with a running byte counter
-        content = await file.read()
-
-        if len(content) > MAX_SIZE:
+        # requires a more invasive architectural change (chunked streaming from request.stream()
+        
+        if file.size > MAX_SIZE:
             raise BlobTooLargeError(
                 message="File exceeds the 3 MB size limit.",
                 status_code=413,
                 details={
-                    "received_bytes": len(content),
+                    "received_bytes": file.size,
                     "max_bytes": MAX_SIZE,
                 },
             )
+        content = await file.read()
 
         blob_id = str(uuid7())
-
+        # make dir if not exist
+        user_dir = self.storage_path / str(user_uuid)
+        user_dir.mkdir(parents=True, exist_ok=True)
+        
         try:
-            async with aiofiles.open(self.storage_path / blob_id, "wb") as f:
+            async with aiofiles.open(self.storage_path / str(user_uuid) / blob_id, "wb") as f:
                 await f.write(content)
         except OSError as e:
             raise BlobServiceException(

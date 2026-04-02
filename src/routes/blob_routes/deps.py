@@ -5,9 +5,10 @@ from fastapi import Path as PathParam
 from fastapi.exceptions import RequestValidationError
 
 from src.service import BlobStorageService
+from src.config import settings
 
 def get_blob_service() -> BlobStorageService:
-    return BlobStorageService(storage_path=Path("temp_storage"))
+    return BlobStorageService(storage_path=Path(settings.BLOB_STORAGE_PATH))
 
 def validate_blob_id(blob_id:str = PathParam(...)) -> str:
     try:

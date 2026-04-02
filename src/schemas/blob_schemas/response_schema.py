@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, AnyHttpUrl
 
 
 class BlobMetadata(BaseModel):
@@ -9,6 +9,7 @@ class BlobMetadata(BaseModel):
 
 class BlobUploadResponse(BaseModel):
     blob_id: str
+    blob_url: AnyHttpUrl
     file_metadata: BlobMetadata
 
 
