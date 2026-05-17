@@ -24,7 +24,7 @@ services:
     image: mongo:7
     container_name: baltihub-mongodb-service
     ports:
-      - "27017:27017"
+      - "27012:27017"
     environment:
       MONGO_INITDB_DATABASE: ${MONGO_DB}
     volumes:
