@@ -41,7 +41,7 @@ services:
   # ==============================
   balti_hub:
     build:
-        context: .
+        context: apps/backend/Dockerfile
         dockerfile: Dockerfile
     container_name: baltiHub-service
     ports:
@@ -53,6 +53,20 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+
+  # ==============================
+  # Frontend (React SPA + Nginx)
+  # ==============================
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: baltiHub-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - balti_hub
+    restart: unless-stopped
 
 volumes:
     mongodb_data:

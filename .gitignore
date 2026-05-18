@@ -211,3 +211,6 @@ __marimo__/
 .env.dev
 .env.prod
 temp_storage
+
+frontend/node_modules/
+frontend/dist/
