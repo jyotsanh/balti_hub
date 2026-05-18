@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/lib/auth-context';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 import { Toaster } from '@/components/Toaster';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { SuperuserRoute } from '@/components/SuperuserRoute';
@@ -67,6 +68,7 @@ export default function App() {
                 />
               </Routes>
             </main>
+            <Footer />
           </div>
           <Toaster />
         </BrowserRouter>
