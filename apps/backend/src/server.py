@@ -37,6 +37,8 @@ async def lifespan(app: FastAPI):
         rclient = AsyncRedisClient(
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
+            password=settings.REDIS_PASSWORD,
+            db=settings.REDIS_DB,
         )
         if not await rclient.ping(): # check redis connection
             logger.error(

@@ -40,7 +40,7 @@ class BlobStorageService:
         # TODO (jyotsanh): Fix the memory vulnerability
         # requires a more invasive architectural change (chunked streaming from request.stream()
         
-        if file.size is None and file.size > MAX_SIZE:
+        if file.size is not None and file.size > MAX_SIZE:
             raise BlobTooLargeError(
                 message="File exceeds the 3 MB size limit.",
                 status_code=413,

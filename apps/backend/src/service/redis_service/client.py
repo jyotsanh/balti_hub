@@ -15,9 +15,11 @@ class AsyncRedisClient:
         client: aredis.Redis | None = None,
         host: str = "localhost",
         port: int = 6379,
+        password: str | None = None,
+        db: int = 0,
     ):
         self._client: aredis.Redis = client if client is not None else aredis.Redis(
-            host=host, port=port
+            host=host, port=port, password=password, db=db
         )
 
 

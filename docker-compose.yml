@@ -8,8 +8,8 @@ services:
     ports:
       - "6370:6379"
     command: ["redis-server", "--appendonly", "yes"]
-
-
+    volumes:
+      - redis_data:/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -26,7 +26,7 @@ services:
     ports:
       - "27012:27017"
     environment:
-      MONGO_INITDB_DATABASE: ${MONGO_DB}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-balti-hub}
     volumes:
       - mongodb_data:/data/db
     restart: unless-stopped
@@ -48,29 +48,39 @@ services:
       - "8050:8015"
     env_file:
       - ./.env.prod
+    volumes:
+      - blob_data:/app/temp_storage
     depends_on:
       redis:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.create_connection(('localhost',8015),2); s.close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   # ==============================
-  # Frontend (React SPA + Nginx)
+  # Frontend (React SPA + Vite Preview)
   # ==============================
   frontend:
     build:
       context: ./apps/frontend/
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL}
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8050/api/v1}
     container_name: baltiHub-frontend
     ports:
       - "4173:4173"
-    env_file:
-      - ./.env.prod
     depends_on:
-      - balti_hub
+      balti_hub:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
     mongodb_data:
+    redis_data:
+    blob_data:

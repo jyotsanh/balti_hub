@@ -36,15 +36,24 @@ FROM python:3.13-slim AS final
 
 WORKDIR /app
 
+# Create a non-root user for security
+RUN adduser --disabled-password --no-create-home appuser
+
 # Copy the pre-built virtual environment from the builder stage
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy only the necessary source code for runtime
 COPY src/ ./src/
 
+# Ensure the blob storage directory exists and is owned by appuser
+RUN mkdir -p /app/temp_storage && chown -R appuser:appuser /app
+
 # Place the virtual environment's bin directory at the front of the PATH.
 # This means running "python" will automatically use the isolated .venv!
 ENV PATH="/app/.venv/bin:$PATH"
+
+# Switch to non-root user
+USER appuser
 
 EXPOSE 8015
 

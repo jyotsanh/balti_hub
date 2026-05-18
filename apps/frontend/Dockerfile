@@ -18,10 +18,18 @@ RUN npm run build
 FROM node:24-alpine AS final
 WORKDIR /app
 
+# Create a non-root user for security
+RUN adduser -D appuser
+
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/vite.config.ts ./vite.config.ts
+
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
 
 EXPOSE 4173
 CMD ["npm", "run", "preview", "--", "--host", "--port", "4173"]

@@ -16,7 +16,7 @@ from pydantic import  Field
 
 class BlobDocument(Document):
     blob_id: Annotated[UUID, Field(default_factory=uuid7), Indexed(unique=True)]
-    owner_uuid1:Annotated[UUID, Indexed(unique=True)]
+    owner_uuid:Annotated[UUID, Indexed()]
     file_name:str
     file_size:int
     content_type:str
