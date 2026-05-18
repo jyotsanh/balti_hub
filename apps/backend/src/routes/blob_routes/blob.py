@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, UploadFile, Response, Request
 
-from apps.backend.src.schemas import BlobUploadResponse, BlobMetadata, BlobListResponse
-from apps.backend.src.models import UserDocument, BlobDocument
-from apps.backend.src.service import BlobStorageService
-from apps.backend.src.service.blob_storage_service.exception import BlobUploadLimitError
-from apps.backend.src.auth import get_current_active_user
+from src.schemas import BlobUploadResponse, BlobMetadata, BlobListResponse
+from src.models import UserDocument, BlobDocument
+from src.service import BlobStorageService
+from src.service.blob_storage_service.exception import BlobUploadLimitError
+from src.auth import get_current_active_user
 from .deps import get_blob_service, validate_blob_id
 
 

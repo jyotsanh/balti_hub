@@ -13,22 +13,22 @@ from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 from beanie import Document, Indexed, init_beanie
 
 # application
-from apps.backend.src.config import settings
-from apps.backend.src.middlewares import (
+from src.config import settings
+from src.middlewares import (
     RateLimiterMiddleware, 
     SecurityHeadersMiddleware, 
     ProcessTimeMiddleware
 )
-from apps.backend.src.service import AsyncRedisClient
-from apps.backend.src.routes import api_router
-from apps.backend.src.exception_handlers import (
+from src.service import AsyncRedisClient
+from src.routes import api_router
+from src.exception_handlers import (
     api_exception_handler, 
     validation_exception_handler
 )
-from apps.backend.src.exception import AppBaseException
-from apps.backend.src.auth import get_hashed_password
+from src.exception import AppBaseException
+from src.auth import get_hashed_password
 # models
-from apps.backend.src.models import UserDocument, BlobDocument
+from src.models import UserDocument, BlobDocument
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

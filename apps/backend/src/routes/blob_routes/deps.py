@@ -4,8 +4,8 @@ from pathlib import Path
 from fastapi import Path as PathParam
 from fastapi.exceptions import RequestValidationError
 
-from apps.backend.src.service import BlobStorageService
-from apps.backend.src.config import settings
+from src.service import BlobStorageService
+from src.config import settings
 
 def get_blob_service() -> BlobStorageService:
     return BlobStorageService(storage_path=Path(settings.BLOB_STORAGE_PATH))

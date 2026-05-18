@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 
-from apps.backend.src.exception import AppBaseException
+from src.exception import AppBaseException
 
 async def api_exception_handler(request: Request, exc: AppBaseException) -> JSONResponse:
     return JSONResponse(

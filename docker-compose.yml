@@ -41,13 +41,13 @@ services:
   # ==============================
   balti_hub:
     build:
-        context: apps/backend/Dockerfile
+        context: ./apps/backend/
         dockerfile: Dockerfile
     container_name: baltiHub-service
     ports:
       - "8050:8015"
     env_file:
-      - .env.prod
+      - ./.env.prod
     depends_on:
       redis:
         condition: service_healthy
@@ -59,11 +59,15 @@ services:
   # ==============================
   frontend:
     build:
-      context: .
-      dockerfile: apps/frontend/Dockerfile
+      context: ./apps/frontend/
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
     container_name: baltiHub-frontend
     ports:
-      - "80:80"
+      - "4173:4173"
+    env_file:
+      - ./.env.prod
     depends_on:
       - balti_hub
     restart: unless-stopped

@@ -7,9 +7,9 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException , status
 from uuid import UUID
 
-from apps.backend.src.models import UserDocument
-from apps.backend.src.schemas import TokenPayload
-from apps.backend.src.config import settings
+from src.models import UserDocument
+from src.schemas import TokenPayload
+from src.config import settings
 
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login/access-token")

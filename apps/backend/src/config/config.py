@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     # cors
     BACKEND_CORS_ORIGINS:list[AnyHttpUrl] = [
         "http://localhost:8015",
-        "http://localhost:8000"
+        "http://localhost:8000",
+        "http://localhost",
+        "http://localhost:80"
     ]
     ALLOW_CREDENTIALS:bool = False
     API_LIMIT:int = 20

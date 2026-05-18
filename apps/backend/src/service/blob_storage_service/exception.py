@@ -1,4 +1,4 @@
-from apps.backend.src.exception import AppBaseException
+from src.exception import AppBaseException
 
 
 class BlobServiceException(AppBaseException): ...

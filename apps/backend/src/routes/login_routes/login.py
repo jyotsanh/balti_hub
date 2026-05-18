@@ -3,9 +3,9 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from apps.backend.src.auth import authenticate_user, create_access_token
-from apps.backend.src.schemas import Token
-from apps.backend.src.config import settings
+from src.auth import authenticate_user, create_access_token
+from src.schemas import Token
+from src.config import settings
 
 login_router = APIRouter()
 

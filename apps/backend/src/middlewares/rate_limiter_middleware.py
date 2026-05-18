@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse  # Import this
 from starlette.middleware.base import BaseHTTPMiddleware
 from loguru import logger
 
-from apps.backend.src.service import AsyncRedisClient
+from src.service import AsyncRedisClient
 
 
 class RateLimiterMiddleware(BaseHTTPMiddleware):

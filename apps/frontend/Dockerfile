@@ -1,21 +1,27 @@
-# Build context is the project root (set in docker-compose.yml)
+# Build context is the frontend directory (set in docker-compose.yml)
 # ── Stage 1: Build ────────────────────────────────────────────────────────────
 FROM node:24-alpine AS builder
 WORKDIR /app
 
-COPY frontend/package*.json ./
+COPY package*.json ./
 RUN npm ci
 
-COPY frontend/ .
+COPY . .
+
+# Vite bakes env vars at build time; accept them as build args
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
-# ── Stage 2: Serve ────────────────────────────────────────────────────────────
-FROM nginx:1.27-alpine AS final
+# ── Stage 2: Serve (vite preview) ────────────────────────────────────────────
+FROM node:24-alpine AS final
+WORKDIR /app
 
-# Copy the built SPA into the default nginx web root
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/vite.config.ts ./vite.config.ts
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 4173
+CMD ["npm", "run", "preview", "--", "--host", "--port", "4173"]

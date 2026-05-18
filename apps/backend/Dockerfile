@@ -17,7 +17,7 @@ ENV UV_LINK_MODE=copy \
     UV_NO_DEV=1
 
 # Copy dependency manifests first for layer caching
-COPY pyproject.toml uv.lock README.md ./
+COPY pyproject.toml uv.lock Backend.README.md ./
 
 # Install third-party dependencies into /app/.venv
 RUN uv sync --locked --no-install-project

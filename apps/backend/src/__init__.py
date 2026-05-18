@@ -3,7 +3,7 @@ import argparse
 import uvicorn
 from loguru import logger
 
-from apps.backend.src.config import settings
+from src.config import settings
 
 
 def dev():

@@ -6,12 +6,12 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic.networks import EmailStr
 from pymongo import errors
 
-from apps.backend.src.schemas import User, UserUpdate
-from apps.backend.src.auth import (
+from src.schemas import User, UserUpdate
+from src.auth import (
     get_current_active_superuser,
     get_hashed_password,
 )
-from apps.backend.src.models import UserDocument
+from src.models import UserDocument
 
 router = APIRouter()
 

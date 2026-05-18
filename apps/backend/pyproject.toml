@@ -2,7 +2,7 @@
 name = "balti-hub"
 version = "0.1.0"
 description = "A blob cloud service for storing objects"
-readme = "README.md"
+readme = "Backend.README.md"
 requires-python = ">=3.12"
 dependencies = [
     "aiofiles>=25.1.0",

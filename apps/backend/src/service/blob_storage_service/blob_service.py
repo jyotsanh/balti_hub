@@ -5,7 +5,7 @@ from uuid import UUID
 from uuid6 import uuid7
 from fastapi import UploadFile
 
-from apps.backend.src.service.blob_storage_service.exception import (
+from src.service.blob_storage_service.exception import (
     BlobServiceException,
     BlobTooLargeError,
     BlobNotFoundError,
